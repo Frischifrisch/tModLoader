@@ -11,7 +11,7 @@ def set_permissions(tarinfo):
     filename = os.path.basename(tarinfo.name)
     #print("Deciding for " + tarinfo.name)
     if filename in executables:
-        print("Execute permissions set for " + tarinfo.name)
+        print(f"Execute permissions set for {tarinfo.name}")
         #tarinfo.mode = 0o100777 << 16 # 0777 # for example
         tarinfo.mode = 0o777
     return tarinfo
@@ -24,27 +24,25 @@ def zipdir(path, ziph):
             destination = os.path.relpath(file, path)
             if extra:
                 destination = os.path.join(extra, destination)
-            print("Zipping " + file)
+            print(f"Zipping {file}")
             if (filename in executables):
-                f = open(file, 'br')
-                bytes = f.read()
-                f.close()
-                
+                with open(file, 'br') as f:
+                    bytes = f.read()
                 info = zipfile.ZipInfo(destination)
                 info.date_time = time.localtime()
                 #info.external_attr |= 0o755 << 
                 info.external_attr = 0o100777 << 16
-                print("Execute permissions set for " + file)
-                
+                print(f"Execute permissions set for {file}")
+
                 ziph.writestr(info, bytes, zipfile.ZIP_DEFLATED)
             else:
                 ziph.write(file, destination)
             
 if __name__ == '__main__':
-    if(len(sys.argv) != 3 and len(sys.argv) != 4):
+    if len(sys.argv) not in [3, 4]:
         print("[FolderName] [ZipFileName] [Relative] arguments needed")
         sys.exit()
-        
+
     foldername = sys.argv[1]
     zipfilename = sys.argv[2]
     if len(sys.argv) == 4:
