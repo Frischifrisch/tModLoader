@@ -72,7 +72,7 @@ for index, (language, steamLanguage) in enumerate(zip(languages, steamLanguages)
             steamTagData[key] = temp
         else:
             missing += 1
-    
+
     steamTagData['category_3'] = TagsCategoryLanguage[index]
 
     if missing > 0:
@@ -90,16 +90,16 @@ for index, (language, steamLanguage) in enumerate(zip(languages, steamLanguages)
     if outputString != originalString:
         print("Updated File:", outputFilename)
         anyFileNeedsUploading = True
-        
+
         with open(outputFilename, "w", encoding='utf-8') as tagFileNew:
             tagFileNew.write(outputString)
 
 with open('./TranslationsNeeded.txt', 'w', encoding='utf-8') as output:
-    if len(missings) == 0:
+    if not missings:
         output.write('All Translations up-to-date!')
     else:
         for entry in missings: 
-            output.write(str(entry[0]) + " " + str(entry[1]) + "\n")
+            output.write(f"{str(entry[0])} {str(entry[1])}" + "\n")
 if anyFileNeedsUploading:
     print("Make sure to upload the Output files to steam. (Any file in the output mentioned as updated file)")
 else:

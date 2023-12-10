@@ -17,6 +17,6 @@ TypicalReplace("documentation/Doxyfile", "PROJECT_NUMBER         = ", versionInp
 TypicalReplace("../patches/tModLoader/Terraria.ModLoader/ModLoader.cs", "\t\tpublic static readonly Version version = new Version(", ', '.join(versionList) + ');')
 
 with open('ReleaseExtras/version', 'w') as verisonFile:
-    verisonFile.write('v' + versionInput)
+    verisonFile.write(f'v{versionInput}')
 
 input("Press Enter to continue...")

@@ -11,9 +11,9 @@ for language in languages:
     otherLanguage = ''
     missing = 0
     print("Updating:",language)
-    with open(filename.format('en-US'), 'r', encoding='utf-8') as english, open(filename.format(language), 'r', encoding='utf-8') as other:
+    with (open(filename.format('en-US'), 'r', encoding='utf-8') as english, open(filename.format(language), 'r', encoding='utf-8') as other):
         enLines = english.readlines()
-        
+
         # Preserve Credits (comment lines on first few lines)
         otherLinesAll = other.readlines()
         for otherLine in otherLinesAll:
@@ -21,13 +21,20 @@ for language in languages:
                 otherLanguage += otherLine
             else:
                 break
-                
+
         # Skip empty whitespace and comment lines to end up with only json lines.
         otherLines = [x for x in otherLinesAll if not (x.strip().startswith("//") or len(x.strip()) == 0)]
         # Store in dictionary for easy retrieval
-        otherLinesDict = dict((k.strip(), v.strip()) for k,v in (line.strip().split(':', 1) for line in otherLines if line.find(':') != -1))
+        otherLinesDict = {
+            k.strip(): v.strip()
+            for k, v in (
+                line.strip().split(':', 1)
+                for line in otherLines
+                if line.find(':') != -1
+            )
+        }
 
-        for englishIndex, englishLine in enumerate(enLines):
+        for englishLine in enLines:
             # For lines with key values pairs, copy translation or add commented translation placeholder.
             if englishLine.find(": ") != -1 and len(englishLine.split('"')) >= 4:
                 translationKey = englishLine[:englishLine.find(": ")].strip()
@@ -42,7 +49,6 @@ for language in languages:
             # Add other json lines in. Also add in whitespace lines.
             else:
                 otherLanguage += englishLine
-            #print(otherLanguage)
     # Save changes.
     if missing > 0:
         missings.append( (language, missing) )
@@ -51,10 +57,10 @@ for language in languages:
         output.write(otherLanguage)
 
 with open('./TranslationsNeeded.txt', 'w', encoding='utf-8') as output:
-    if len(missings) == 0:
+    if not missings:
         output.write('All Translations up-to-date!')
     else:
         for entry in missings: 
-            output.write(str(entry[0]) + " " + str(entry[1]) + "\n")
+            output.write(f"{str(entry[0])} {str(entry[1])}" + "\n")
 print("Make sure to run Diff.")
 input("Press Enter to continue...")
